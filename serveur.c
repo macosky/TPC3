@@ -10,12 +10,13 @@ SOCKET sock;
  * 
  * @return int 
  */
-int ouverture()
+SOCKET ouverture()
 {
 
     memset(&serv_addr, '0', sizeof(serv_addr));
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
+
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -34,7 +35,7 @@ int ouverture()
     }
 
     printf("Socket ouvert on ecoute \n");
-    return 0;
+    return sock ;
 }
 
 SOCKET acceptClient()
@@ -43,6 +44,23 @@ SOCKET acceptClient()
     SOCKET sockClient = accept(sock, NULL, NULL);
 
     return sockClient;
+}
+
+void lecture(SOCKET sock)
+{
+
+    int n = 0;
+    char lecture[1024];
+    printf("Reception : ");
+
+    while ((n = read(sock, lecture, sizeof(lecture) - 1)) > 0)
+    {
+        lecture[n] = 0;
+        if (fputs(lecture, stdout) == EOF)
+        {
+            printf("Lecture erreur\n");
+        }
+    }
 }
 
 char *getPORT(SOCKET sockClient)
@@ -63,11 +81,11 @@ char *getPORT(SOCKET sockClient)
     return buffer;
 }
 
-void echoClient(SOCKET sockClient)
+void serveur_echo(SOCKET sockClient)
 {
     char *buffer = getPORT(sockClient);
 
-    printf("%s",buffer);
+    printf("J'envoie : %s",buffer);
     if (write(sockClient, buffer, strlen(buffer)) < 0)
     {
         perror("Cannot write");
@@ -76,3 +94,12 @@ void echoClient(SOCKET sockClient)
     free(buffer);
 }
 
+int connection(SOCKET sock)
+{
+    if (connect(sock, (struct sockaddr *)&client_addr, sizeof(client_addr)) < 0)
+    {
+        printf("Connection fail\n");
+        return 1;
+    }
+    return 0;
+}

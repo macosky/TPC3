@@ -10,8 +10,12 @@
 
 typedef int SOCKET;
 
-int ouverture();
+SOCKET ouverture();
 
-int acceptClient();
+SOCKET acceptClient();
 
-void echoClient(SOCKET sockClient);
+void serveur_echo(SOCKET sockClient);
+
+void lecture(SOCKET sock);
+
+int connection(SOCKET sock);

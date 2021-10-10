@@ -1,17 +1,23 @@
 #include "serveur.h"
 
-int main(void){
+int main(void)
+{
+    int fin = 1;
 
-    ouverture();
+    SOCKET sockServer = ouverture();
 
-    while (1){
+    while (fin)
+    {
 
         SOCKET sockClient = acceptClient();
 
-        echoClient(sockClient);
+        serveur_echo(sockClient);
         
+        
+        lecture(sockClient);
+
+
         close(sockClient);
-        
     }
 
     return 0;
