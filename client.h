@@ -16,4 +16,6 @@ int connection(SOCKET sock);
 
 void lecture(SOCKET sock);
 
+void client_echo(SOCKET sock);
+
 
