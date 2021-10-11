@@ -13,21 +13,33 @@ void myInterruptHandler(int signum)
 
 int main(void)
 {
-    //Creation socket
-    sockServer = ouverture(server);
+    // //Creation socket
+    // sockServer = ouverture(server);
 
-    while (1)
-    {
+    // while (1)
+    // {
+    //     // gestion des sig
+    //     signal(SIGTERM, myInterruptHandler);
+    //     signal(SIGINT, myInterruptHandler);
+
+    //     //on prend 1 client
+    //     sockClient = acceptClient(sockServer, client);
+
+    //     // on fait de l'echo
+    //     serveur_echo(sockClient);
+    // }
+
+    //Creation socket
+    sockServer = ouvertureUDP(server);
+
+    while(1) {
         // gestion des sig
         signal(SIGTERM, myInterruptHandler);
         signal(SIGINT, myInterruptHandler);
 
-        //on prend 1 client
-        sockClient = acceptClient(sockServer, client);
-
-        // on fait de l'echo
-        serveur_echo(sockClient);
+        serveur_echoUDP(sockServer, client);
     }
+
 
     return 0;
 }

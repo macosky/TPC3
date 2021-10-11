@@ -15,13 +15,32 @@ void myInterruptHandler(int signum)
 int main(void)
 {
 
+    // server = malloc(sizeof(struct sockaddr_in));
+
+    // //on ouvre le socket
+    // sock = ouverture(server);
+
+    // //on ce connecte au serveur
+    // connection(sock, *server);
+
+    // while (1)
+    // {   
+    //     //gestion signaux
+    //     signal(SIGTERM, myInterruptHandler);
+    //     signal(SIGINT, myInterruptHandler);
+
+    //     //on parle au serveur et on recoit ca reponse
+    //     client_echo(sock);
+    // }
+    
+    ////////////////////
+    //// DATAGRAMME ////
+    ////////////////////
+
     server = malloc(sizeof(struct sockaddr_in));
 
     //on ouvre le socket
-    sock = ouverture(server);
-
-    //on ce connecte au serveur
-    connection(sock, *server);
+    sock = ouvertureUDP(server);
 
     while (1)
     {   
@@ -30,7 +49,7 @@ int main(void)
         signal(SIGINT, myInterruptHandler);
 
         //on parle au serveur et on recoit ca reponse
-        client_echo(sock);
+        client_echoUDP(sock, &server);
     }
 
     return 0;

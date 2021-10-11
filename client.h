@@ -15,3 +15,11 @@ SOCKET ouverture(struct sockaddr_in *server);
 int connection(SOCKET sock, struct sockaddr_in server);
 
 int client_echo(SOCKET sock);
+
+////////////////////
+//// DATAGRAMME ////
+////////////////////
+
+SOCKET ouvertureUDP(struct sockaddr_in *server);
+
+int client_echoUDP(SOCKET sock, struct sockaddr_in server);
