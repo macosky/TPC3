@@ -5,37 +5,30 @@ struct sockaddr_in server_addr;
 
 SOCKET sock;
 
-SOCKET ouverture()
+SOCKET ouverture(struct sockaddr_in *server)
 {
 
-    memset(&client_addr, '0', sizeof(client_addr));
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    client_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
-    client_addr.sin_family = AF_INET;
-    client_addr.sin_port = htons(1234);
-
-    if (inet_pton(AF_INET, "127.0.0.1", &client_addr.sin_addr) <= 0)
-    {
-        printf("Convertion d'adresse fail\n");
-        exit(1);
-    }
+    server->sin_family = AF_INET;
+    server->sin_addr.s_addr = inet_addr("127.0.0.1");
+    server->sin_port = htons(1234);
 
     return sock;
 }
 
-int connection(SOCKET sock)
+int connection(SOCKET sock, struct sockaddr_in server)
 {
-    if (connect(sock, (struct sockaddr *)&client_addr, sizeof(client_addr)) < 0)
+    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
-        printf("Connection fail\n");
-        return 1;
+        puts("Connection fail");
+        exit(1);
     }
     return 0;
 }
 
-void lecture(SOCKET sock)
+int lecture(SOCKET sock)
 {
 
     int n = 0;
@@ -47,40 +40,34 @@ void lecture(SOCKET sock)
         lecture[n] = 0;
         if (fputs(lecture, stdout) == EOF)
         {
-            printf("Lecture erreur\n");
+            puts("Lecture erreur");
+            exit(1);
         }
     }
 }
 
-char *getServerDescritpion(SOCKET sock)
-{
-    char IP[16];
-    unsigned int Port;
-    char *buffer = malloc(sizeof(char) * 100);
+int client_echo(SOCKET sock)
+{   
+    char * message = malloc(100*sizeof(char));
+    char * reponse = malloc(100*sizeof(char));
+    printf("> ");
+    scanf("%s", message);
 
-    bzero(&server_addr, sizeof(server_addr));
-    socklen_t len = sizeof(server_addr);
-
-    getsockname(sock, (struct sockaddr *)&server_addr, &len);
-
-    inet_ntop(AF_INET, &server_addr.sin_addr, IP, sizeof(IP));
-
-    Port = ntohs(server_addr.sin_port);
-
-    sprintf(buffer, "IP: %s PORT: %d", IP, Port);
-
-    return buffer;
-}
-
-void client_echo(SOCKET sock)
-{
-    char *buffer = getServerDescritpion(sock);
-
-    printf("J'envoie : %s\n", buffer);
-    if (write(sock, buffer, strlen(buffer)) < 0)
+    //Send some data
+    if (send(sock, message, strlen(message), 0) < 0)
     {
-        perror("Cannot write");
-        exit(3);
+        puts("Erreur envoie");
+        exit(1);
     }
-    free(buffer);
+
+    //Receive a reply from the server
+    if (recv(sock, reponse, sizeof(reponse), 0) < 0)
+    {
+        puts("Erreur reception");
+        exit(1);
+    }
+
+    printf("$ %s \n",reponse);
+    memset(reponse, 0, sizeof(reponse));
+    return 0;
 }

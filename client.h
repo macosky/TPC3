@@ -7,12 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 typedef int SOCKET;
 
-SOCKET ouverture();
 
-int connection(SOCKET sock);
+SOCKET ouverture(struct sockaddr_in *server);
+
+int connection(SOCKET sock,struct sockaddr_in server);
 
 void lecture(SOCKET sock);
 
