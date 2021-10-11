@@ -2,23 +2,25 @@
 
 int main(void)
 {
+    struct sockaddr_in server, client;
     int fin = 1;
 
-    SOCKET sockServer = ouverture();
+    SOCKET sockServer = ouverture(server);
+
+    
 
     while (fin)
     {
 
-        SOCKET sockClient = acceptClient();
+        SOCKET sockClient = acceptClient(client);
 
         serveur_echo(sockClient);
-        
-        
-        lecture(sockClient);
 
 
-        close(sockClient);
+        //     close(sockClient);
     }
+
+   
 
     return 0;
 }

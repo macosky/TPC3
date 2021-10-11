@@ -1,7 +1,6 @@
 #include "serveur.h"
 
-struct sockaddr_in serv_addr;
-struct sockaddr_in client_addr;
+
 
 SOCKET sock;
 
@@ -10,38 +9,37 @@ SOCKET sock;
  * 
  * @return int 
  */
-SOCKET ouverture()
+SOCKET ouverture(struct sockaddr_in server)
 {
 
-    memset(&serv_addr, '0', sizeof(serv_addr));
+    memset(&server, '0', sizeof(server));
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
 
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    server.sin_port = htons(1234);
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_addr.sin_port = htons(1234);
-
-    if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
+    if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
         printf("bind() error \n");
         exit(1);
     }
 
-    if (listen(sock, 100) == -1)
+    if (listen(sock, 10) == -1)
     {
         printf("listen() error \n");
         exit(1);
     }
 
     printf("Socket ouvert on ecoute \n");
-    return sock ;
+    return sock;
 }
 
-SOCKET acceptClient()
+SOCKET acceptClient(struct sockaddr_in client)
 {
-
-    SOCKET sockClient = accept(sock, NULL, NULL);
+    int sizesockaddr = sizeof(struct sockaddr_in);
+    SOCKET sockClient = accept(sock, (struct sockaddr *)&client, (socklen_t *)&sizesockaddr);
 
     return sockClient;
 }
@@ -63,43 +61,16 @@ void lecture(SOCKET sock)
     }
 }
 
-char *getPORT(SOCKET sockClient)
-{
-    char *buffer = malloc(sizeof(char) * 100);
-    struct sockaddr_in sin;
-    socklen_t len = sizeof(sin);
-
-    if (getsockname(sockClient, (struct sockaddr *)&sin, &len) == -1)
-    {
-        perror("getsockname");
-    }
-    else
-    {
-        sprintf(buffer, "port number %d\n", ntohs(sin.sin_port));
-    }
-    
-    return buffer;
-}
-
 void serveur_echo(SOCKET sockClient)
 {
-    char *buffer = getPORT(sockClient);
-
-    printf("J'envoie : %s",buffer);
-    if (write(sockClient, buffer, strlen(buffer)) < 0)
+    int taille = 0;
+    char *buffer = malloc(100 * sizeof(char));
+    
+    while ((taille = recv(sockClient, buffer, 100, 0)) > 0)
     {
-        perror("Cannot write");
-        exit(3);
+        printf("%s", buffer);
+        write(sockClient, buffer, strlen(buffer));
+        memset(buffer,0,sizeof(buffer));
     }
-    free(buffer);
-}
-
-int connection(SOCKET sock)
-{
-    if (connect(sock, (struct sockaddr *)&client_addr, sizeof(client_addr)) < 0)
-    {
-        printf("Connection fail\n");
-        return 1;
-    }
-    return 0;
+    
 }

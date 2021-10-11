@@ -10,12 +10,10 @@
 
 typedef int SOCKET;
 
-SOCKET ouverture();
+SOCKET ouverture(struct sockaddr_in server);
 
 SOCKET acceptClient();
 
 void serveur_echo(SOCKET sockClient);
 
 void lecture(SOCKET sock);
-
-int connection(SOCKET sock);
