@@ -6,13 +6,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <signal.h>
 
 typedef int SOCKET;
 
 SOCKET ouverture(struct sockaddr_in server);
 
-SOCKET acceptClient();
+SOCKET acceptClient(SOCKET sock, struct sockaddr_in client);
 
 void serveur_echo(SOCKET sockClient);
 

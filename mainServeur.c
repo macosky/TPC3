@@ -1,26 +1,33 @@
 #include "serveur.h"
 
+SOCKET sockServer, sockClient;
+struct sockaddr_in server, client;
+/*sighandler*/
+void myInterruptHandler(int signum)
+{
+    printf("\nATTENTION \nextinction Serveur\n");
+    close(sockClient);
+    close(sockServer);
+    exit(1);
+}
+
 int main(void)
 {
-    struct sockaddr_in server, client;
-    int fin = 1;
+    //Creation socket
+    sockServer = ouverture(server);
 
-    SOCKET sockServer = ouverture(server);
-
-    
-
-    while (fin)
+    while (1)
     {
+        // gestion des sig
+        signal(SIGTERM, myInterruptHandler);
+        signal(SIGINT, myInterruptHandler);
 
-        SOCKET sockClient = acceptClient(client);
+        //on prend 1 client
+        sockClient = acceptClient(sockServer, client);
 
+        // on fait de l'echo
         serveur_echo(sockClient);
-
-
-        //     close(sockClient);
     }
-
-   
 
     return 0;
 }

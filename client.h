@@ -6,16 +6,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 
 typedef int SOCKET;
 
-
 SOCKET ouverture(struct sockaddr_in *server);
 
-int connection(SOCKET sock,struct sockaddr_in server);
+int connection(SOCKET sock, struct sockaddr_in server);
 
-void lecture(SOCKET sock);
-
-void client_echo(SOCKET sock);
-
-
+int client_echo(SOCKET sock);

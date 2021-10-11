@@ -1,22 +1,37 @@
 #include "client.h"
 
+struct sockaddr_in *server;
+SOCKET sock;
+
+/*sighandler*/
+void myInterruptHandler(int signum)
+{
+    printf("\nATTENTION \nextinction client\n");
+    free(server);
+    close(sock);
+    exit(1);
+}
+
 int main(void)
 {
-    char message[100];
-    char *server_reply = malloc(100 * sizeof(char));
 
-    struct sockaddr_in *server = malloc(sizeof(struct sockaddr_in));
-    
+    server = malloc(sizeof(struct sockaddr_in));
 
-    SOCKET sock = ouverture(server);
-    
-    
-    connection(sock,*server);
+    //on ouvre le socket
+    sock = ouverture(server);
 
-    while(1)
+    //on ce connecte au serveur
+    connection(sock, *server);
+
+    while (1)
+    {   
+        //gestion signaux
+        signal(SIGTERM, myInterruptHandler);
+        signal(SIGINT, myInterruptHandler);
+
+        //on parle au serveur et on recoit ca reponse
         client_echo(sock);
-    
+    }
 
-    close(sock);
     return 0;
 }
