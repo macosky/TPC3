@@ -17,3 +17,11 @@ SOCKET acceptClient(SOCKET sock, struct sockaddr_in client);
 void serveur_echo(SOCKET sockClient);
 
 void lecture(SOCKET sock);
+
+////////////////////
+//// DATAGRAMME ////
+////////////////////
+
+void serveur_echoUDP(SOCKET sockClient,struct sockaddr_in client);
+
+SOCKET ouvertureUDP(struct sockaddr_in server);

@@ -71,3 +71,58 @@ void serveur_echo(SOCKET sockClient)
     }
     free(buffer);
 }
+
+
+////////////////////
+//// DATAGRAMME ////
+////////////////////
+
+/**
+ * @brief Ouverture du socket d'ecoute
+ * 
+ * @return int 
+ */
+SOCKET ouvertureUDP(struct sockaddr_in server)
+{
+
+    memset(&server, '0', sizeof(server));
+
+    SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
+
+    int optval = 1;
+    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
+
+    puts("Socket UDP créé");
+
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = htonl(INADDR_ANY);
+    server.sin_port = htons(1234);
+
+    if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1)
+    {
+        printf("bind() error \n");
+        exit(1);
+    }
+
+    printf("Socket ouvert on ecoute \n");
+    return sock;
+}
+
+/**
+ * @brief On lit et renvoit au client
+ * 
+ * @param sockClient le sokcet ouvert du client
+ */
+void serveur_echoUDP(SOCKET sockClient, struct sockaddr_in client)
+{
+    int taille = 0; 
+    char *buffer = malloc(1000 * sizeof(char));
+
+    while ((taille = recvfrom(sockClient, buffer, 1000 * sizeof(char), MSG_DONTWAIT, (struct sockaddr *)&client, (socklen_t *)sizeof(client)) > 0))
+    {
+        // sendto(sockClient, )
+        write(sockClient, buffer, strlen(buffer));
+        memset(buffer, 0, 1000 * sizeof(char));
+    }
+    free(buffer);
+}
