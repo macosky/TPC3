@@ -72,7 +72,6 @@ void serveur_echo(SOCKET sockClient)
     free(buffer);
 }
 
-
 ////////////////////
 //// DATAGRAMME ////
 ////////////////////
@@ -98,7 +97,7 @@ SOCKET ouvertureUDP(struct sockaddr_in server)
     server.sin_addr.s_addr = htonl(INADDR_ANY);
     server.sin_port = htons(1234);
 
-    if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1)
+    if (bind(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
         printf("bind() error \n");
         exit(1);
@@ -111,18 +110,22 @@ SOCKET ouvertureUDP(struct sockaddr_in server)
 /**
  * @brief On lit et renvoit au client
  * 
- * @param sockClient le sokcet ouvert du client
+ * @param sockServer le sokcet ouvert du client
  */
-void serveur_echoUDP(SOCKET sockClient, struct sockaddr_in client)
+void serveur_echoUDP(SOCKET sockServer)
 {
-    int taille = 0; 
     char *buffer = malloc(1000 * sizeof(char));
+    struct sockaddr_in client;
+    int tailleClient = sizeof(client);
 
-    while ((taille = recvfrom(sockClient, buffer, 1000 * sizeof(char), MSG_DONTWAIT, (struct sockaddr *)&client, (socklen_t *)sizeof(client)) > 0))
-    {
-        // sendto(sockClient, )
-        write(sockClient, buffer, strlen(buffer));
-        memset(buffer, 0, 1000 * sizeof(char));
-    }
+    recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
+
+    printf("j'ai recu %s %d\n", buffer, strlen(buffer));
+
+    sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
+
+
+    memset(buffer, 0, 1000 * sizeof(char));
+
     free(buffer);
 }

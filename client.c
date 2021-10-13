@@ -9,14 +9,11 @@ struct sockaddr_in server_addr;
  * @param server pointeur vers les parametre serveur que l'on renseigne
  * @return SOCKET 
  */
-SOCKET ouverture(struct sockaddr_in *server)
+SOCKET ouverture()
 {
 
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 
-    server->sin_family = AF_INET;
-    server->sin_addr.s_addr = inet_addr("127.0.0.1");
-    server->sin_port = htons(1234);
 
     return sock;
 }
@@ -58,8 +55,7 @@ int client_echo(SOCKET sock)
         exit(1);
     }
 
-    memset(message,0,1000 * sizeof(char));
-    puts(message);
+    memset(message, 0, 1000 * sizeof(char));
 
     //je recoie l'echo
     if (recv(sock, message, 1000 * sizeof(char), 0) < 0)
@@ -69,10 +65,7 @@ int client_echo(SOCKET sock)
     }
 
     puts(message);
-    //memset(message,0,1000 * sizeof(char));
-    //memset(reponse,0,1000 * sizeof(char));
     free(message);
-    //free(reponse);
     return 0;
 }
 
@@ -86,18 +79,14 @@ int client_echo(SOCKET sock)
  * @param server pointeur vers les parametre serveur que l'on renseigne
  * @return SOCKET 
  */
-SOCKET ouvertureUDP(struct sockaddr_in *server)
+SOCKET ouvertureUDP()
 {
 
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-    server->sin_family = AF_INET;
-    server->sin_addr.s_addr = inet_addr("127.0.0.1");
-    server->sin_port = htons(1234);
 
     return sock;
 }
-
 
 /**
  * @brief on envoie puis on ecoute
@@ -110,24 +99,26 @@ int client_echoUDP(SOCKET sock, struct sockaddr_in server)
     char *message = malloc(1000 * sizeof(char));
     printf("> ");
     scanf("%s", message);
+    int taille=sizeof(server);
+
 
     //j'envoie mon message
-    if (sendto(sock, message, strlen(message), MSG_DONTWAIT, (struct sockaddr *)&server, (socklen_t)sizeof(server)) < 0)
+    if (
+        sendto(sock, message, strlen(message), MSG_CONFIRM, (struct sockaddr *)&server, taille) < 0)
     {
         puts("Erreur envoie");
         exit(1);
     }
 
-    memset(message,0,1000 * sizeof(char));
-    puts(message);
+    memset(message,0,1000);
 
     //je recoie l'echo
-    if (recvfrom(sock, message, 1000 * sizeof(char), MSG_DONTWAIT, (struct sockaddr *)&server, (socklen_t *)sizeof(server)) < 0)
+    if (recvfrom(sock, (char *)message, 1000, MSG_WAITALL, (struct sockaddr *)&server, &taille) < 0)
     {
         puts("Erreur reception");
         exit(1);
     }
-
+    
     puts(message);
     free(message);
     return 0;

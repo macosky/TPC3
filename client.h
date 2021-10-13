@@ -10,7 +10,7 @@
 
 typedef int SOCKET;
 
-SOCKET ouverture(struct sockaddr_in *server);
+SOCKET ouverture();
 
 int connection(SOCKET sock, struct sockaddr_in server);
 
@@ -20,6 +20,6 @@ int client_echo(SOCKET sock);
 //// DATAGRAMME ////
 ////////////////////
 
-SOCKET ouvertureUDP(struct sockaddr_in *server);
+SOCKET ouvertureUDP();
 
 int client_echoUDP(SOCKET sock, struct sockaddr_in server);
