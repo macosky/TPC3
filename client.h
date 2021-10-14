@@ -10,16 +10,20 @@
 
 typedef int SOCKET;
 
-SOCKET ouverture();
-
-int connection(SOCKET sock, struct sockaddr_in server);
-
-int client_echo(SOCKET sock);
-
 ////////////////////
 //// DATAGRAMME ////
 ////////////////////
 
 SOCKET ouvertureUDP();
 
-int client_echoUDP(SOCKET sock, struct sockaddr_in server);
+int client_echoUDP(SOCKET sock, struct sockaddr_in server, char *message);
+
+////////////////////
+////// STREAM //////
+////////////////////
+
+SOCKET ouvertureTCP();
+
+int connectionTCP(SOCKET sock, struct sockaddr_in server);
+
+int client_echoTCP(SOCKET sock, char *message);

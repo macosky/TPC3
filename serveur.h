@@ -7,16 +7,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <netdb.h>
 
 typedef int SOCKET;
 
-SOCKET ouverture(struct sockaddr_in server);
+////////////////////
+////// STREAM //////
+////////////////////
 
-SOCKET acceptClient(SOCKET sock, struct sockaddr_in client);
+SOCKET ouvertureTCP(struct sockaddr_in server);
 
-void serveur_echo(SOCKET sockClient);
+SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in client);
 
-void lecture(SOCKET sock);
+void serveur_echoTCP(SOCKET sockClient);
 
 ////////////////////
 //// DATAGRAMME ////
@@ -25,4 +28,3 @@ void lecture(SOCKET sock);
 SOCKET ouvertureUDP(struct sockaddr_in server);
 
 void serveur_echoUDP(SOCKET sockServer);
-

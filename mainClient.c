@@ -11,52 +11,57 @@ void myInterruptHandler(int signum)
     exit(1);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
     memset(&server, 0, sizeof(server));
     server.sin_family = AF_INET;
     server.sin_port = htons(1234);
     server.sin_addr.s_addr = INADDR_ANY;
 
-
-    ////////////////////
-    ////// STREAM //////
-    ////////////////////
-    //on ouvre le socket
-    sock = ouverture(server);
-
-    //on ce connecte au serveur
-    connection(sock, server);
-
-    while (1)
+    if (argc != 3)
     {
-        //gestion signaux
-        signal(SIGTERM, myInterruptHandler);
-        signal(SIGINT, myInterruptHandler);
-
-        //on parle au serveur et on recoit ca reponse
-        client_echo(sock);
+        puts("./client [message] [OPTION]");
+        puts("message -> le message a envoyer");
+        puts("OPTION -> -UDP ou -TCP");
+        exit(1);
     }
 
-    ////////////////////
-    //// DATAGRAMME ////
-    ////////////////////
+    signal(SIGTERM, myInterruptHandler);
+    signal(SIGINT, myInterruptHandler);
 
-    //on ouvre le socket
-    // sock = ouvertureUDP();
-    
-    // while (1)
-    // {
-    //     //gestion signaux
-    //     signal(SIGTERM, myInterruptHandler);
-    //     signal(SIGINT, myInterruptHandler);
+    if (!strcmp(argv[2], "-UDP") || !strcmp(argv[2], "-udp"))
+    {
+        ////////////////////
+        //// DATAGRAMME ////
+        ////////////////////
 
-    //     //on parle au serveur et on recoit ca reponse
-    //     client_echoUDP(sock, server);
-    // }
+        //on ouvre le socket
+        sock = ouvertureUDP();
 
-  
-    // close(sock);
+        //on parle au serveur et on recoit ca reponse
+        client_echoUDP(sock, server, argv[1]);
+    }
+    else if (!strcmp(argv[2], "-TCP") || !strcmp(argv[2], "-tcp"))
+    {
+        ////////////////////
+        ////// STREAM //////
+        ////////////////////
+
+        //on ouvre le socket
+        sock = ouvertureTCP(server);
+
+        //on ce connecte au serveur
+        connectionTCP(sock, server);
+
+        //on parle au serveur et on recoit ca reponse
+        client_echoTCP(sock, argv[1]);
+    }
+    else
+    {
+        puts("./client [OPTION]");
+        puts("OPTION -> -UDP ou -TCP");
+        exit(1);
+    }
 
     return 0;
 }

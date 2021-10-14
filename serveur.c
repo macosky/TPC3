@@ -1,11 +1,31 @@
 #include "serveur.h"
 
 /**
+ * @brief Donnes les informations sur le client
+ * 
+ * @param client 
+ */
+void getINFO(struct sockaddr_in client)
+{
+
+    char *client_ip = inet_ntoa(client.sin_addr);
+    printf("Ip source : %s\n", client_ip);
+
+    char host[128];
+    getnameinfo((struct sockaddr *)&client, sizeof(client), host, sizeof(host), NULL, 0, 0);
+    printf("Hostname source : %s\n", host);
+}
+
+////////////////////
+////// STREAM //////
+////////////////////
+
+/**
  * @brief Ouverture du socket d'ecoute
  * 
  * @return int 
  */
-SOCKET ouverture(struct sockaddr_in server)
+SOCKET ouvertureTCP(struct sockaddr_in server)
 {
 
     memset(&server, '0', sizeof(server));
@@ -44,11 +64,14 @@ SOCKET ouverture(struct sockaddr_in server)
  * @param client 
  * @return SOCKET 
  */
-SOCKET acceptClient(SOCKET sock, struct sockaddr_in client)
+SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in client)
 {
     puts("Attente de connexion");
     int sizesockaddr = sizeof(struct sockaddr_in);
     SOCKET sockClient = accept(sock, (struct sockaddr *)&client, (socklen_t *)&sizesockaddr);
+
+    getINFO(client);
+
     puts("Un client est connecté");
 
     return sockClient;
@@ -59,10 +82,11 @@ SOCKET acceptClient(SOCKET sock, struct sockaddr_in client)
  * 
  * @param sockClient le sokcet ouvert du client
  */
-void serveur_echo(SOCKET sockClient)
+void serveur_echoTCP(SOCKET sockClient)
 {
     int taille = 0;
     char *buffer = malloc(1000 * sizeof(char));
+    memset(buffer, 0, 1000 * sizeof(char));
 
     while ((taille = recv(sockClient, buffer, 1000 * sizeof(char), 0)) > 0)
     {
@@ -122,8 +146,9 @@ void serveur_echoUDP(SOCKET sockServer)
 
     printf("j'ai recu %s %d\n", buffer, strlen(buffer));
 
-    sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
+    getINFO(client);
 
+    sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
 
     memset(buffer, 0, 1000 * sizeof(char));
 

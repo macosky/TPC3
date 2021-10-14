@@ -3,17 +3,20 @@
 struct sockaddr_in client_addr;
 struct sockaddr_in server_addr;
 
+////////////////////
+////// STREAM //////
+////////////////////
+
 /**
  * @brief Ouverture du socket
  * 
  * @param server pointeur vers les parametre serveur que l'on renseigne
  * @return SOCKET 
  */
-SOCKET ouverture()
+SOCKET ouvertureTCP()
 {
 
     SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-
 
     return sock;
 }
@@ -25,7 +28,7 @@ SOCKET ouverture()
  * @param server param serveur etablie dans ouverture
  * @return int 
  */
-int connection(SOCKET sock, struct sockaddr_in server)
+int connectionTCP(SOCKET sock, struct sockaddr_in server)
 {
     if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
@@ -41,12 +44,12 @@ int connection(SOCKET sock, struct sockaddr_in server)
  * @param sock notre socket connecter
  * @return int 
  */
-int client_echo(SOCKET sock)
+int client_echoTCP(SOCKET sock, char *message)
 {
-    char *message = malloc(1000 * sizeof(char));
-    //char *reponse = malloc(1000 * sizeof(char));
-    printf("> ");
-    scanf("%s", message);
+    // char *message = malloc(1000 * sizeof(char));
+    // //char *reponse = malloc(1000 * sizeof(char));
+    // printf("> ");
+    // scanf("%s", message);
 
     //j'envoie mon message
     if (send(sock, message, strlen(message), 0) < 0)
@@ -65,7 +68,7 @@ int client_echo(SOCKET sock)
     }
 
     puts(message);
-    free(message);
+    //free(message);
     return 0;
 }
 
@@ -84,7 +87,6 @@ SOCKET ouvertureUDP()
 
     SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
 
-
     return sock;
 }
 
@@ -94,13 +96,13 @@ SOCKET ouvertureUDP()
  * @param sock notre socket connecter
  * @return int 
  */
-int client_echoUDP(SOCKET sock, struct sockaddr_in server)
+int client_echoUDP(SOCKET sock, struct sockaddr_in server, char *message)
 {
-    char *message = malloc(1000 * sizeof(char));
-    printf("> ");
-    scanf("%s", message);
-    int taille=sizeof(server);
+    // char *message = malloc(1000 * sizeof(char));
+    // printf("> ");
+    // scanf("%s", message);
 
+    int taille = sizeof(server);
 
     //j'envoie mon message
     if (
@@ -110,7 +112,7 @@ int client_echoUDP(SOCKET sock, struct sockaddr_in server)
         exit(1);
     }
 
-    memset(message,0,1000);
+    memset(message, 0, 1000);
 
     //je recoie l'echo
     if (recvfrom(sock, (char *)message, 1000, MSG_WAITALL, (struct sockaddr *)&server, &taille) < 0)
@@ -118,8 +120,8 @@ int client_echoUDP(SOCKET sock, struct sockaddr_in server)
         puts("Erreur reception");
         exit(1);
     }
-    
+
     puts(message);
-    free(message);
+    //free(message);
     return 0;
 }
