@@ -13,9 +13,10 @@ void myInterruptHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-    if (argc != 2)
+    if (argc != 3)
     {
-        puts("./serveur [OPTION]");
+        puts("./serveur [PORT] [OPTION]");
+        puts("PORT -> le port d'ouverture du socket");
         puts("OPTION -> -UDP ou -TCP");
         exit(1);
     }
@@ -23,14 +24,14 @@ int main(int argc, char *argv[])
     signal(SIGTERM, myInterruptHandler);
     signal(SIGINT, myInterruptHandler);
 
-    if (!strcmp(argv[1], "-UDP") || !strcmp(argv[1], "-udp"))
+    if (!strcmp(argv[2], "-UDP") || !strcmp(argv[2], "-udp"))
     {
         ////////////////////
         //// DATAGRAMME ////
         ////////////////////
 
         //Creation socket
-        sockServer = ouvertureUDP(server);
+        sockServer = ouvertureUDP(server,atoi(argv[1]));
 
         while (1)
         {
@@ -38,13 +39,13 @@ int main(int argc, char *argv[])
             serveur_echoUDP(sockServer);
         }
     }
-    else if (!strcmp(argv[1], "-TCP") || !strcmp(argv[1], "-tcp"))
+    else if (!strcmp(argv[2], "-TCP") || !strcmp(argv[2], "-tcp"))
     {
         ////////////////////
         ////// STREAM //////
         ////////////////////
         // Creation socket
-        sockServer = ouvertureTCP(server);
+        sockServer = ouvertureTCP(server,atoi(argv[1]));
 
         while (1)
         {

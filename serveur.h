@@ -15,7 +15,7 @@ typedef int SOCKET;
 ////// STREAM //////
 ////////////////////
 
-SOCKET ouvertureTCP(struct sockaddr_in server);
+SOCKET ouvertureTCP(struct sockaddr_in server,int port);
 
 SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in client);
 
@@ -25,6 +25,6 @@ void serveur_echoTCP(SOCKET sockClient);
 //// DATAGRAMME ////
 ////////////////////
 
-SOCKET ouvertureUDP(struct sockaddr_in server);
+SOCKET ouvertureUDP(struct sockaddr_in server,int port);
 
 void serveur_echoUDP(SOCKET sockServer);

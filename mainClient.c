@@ -13,23 +13,24 @@ void myInterruptHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-    memset(&server, 0, sizeof(server));
-    server.sin_family = AF_INET;
-    server.sin_port = htons(1234);
-    server.sin_addr.s_addr = INADDR_ANY;
-
-    if (argc != 3)
+    if (argc != 4)
     {
-        puts("./client [message] [OPTION]");
+        puts("./client [message] [PORT] [OPTION]");
         puts("message -> le message a envoyer");
+        puts("PORT -> le port d'ouverture du socket");
         puts("OPTION -> -UDP ou -TCP");
         exit(1);
     }
 
+    memset(&server, 0, sizeof(server));
+    server.sin_family = AF_INET;
+    server.sin_port = htons(atoi(argv[2]));
+    server.sin_addr.s_addr = INADDR_ANY;
+
     signal(SIGTERM, myInterruptHandler);
     signal(SIGINT, myInterruptHandler);
 
-    if (!strcmp(argv[2], "-UDP") || !strcmp(argv[2], "-udp"))
+    if (!strcmp(argv[3], "-UDP") || !strcmp(argv[3], "-udp"))
     {
         ////////////////////
         //// DATAGRAMME ////
@@ -40,8 +41,12 @@ int main(int argc, char *argv[])
 
         //on parle au serveur et on recoit ca reponse
         client_echoUDP(sock, server, argv[1]);
+
+        while(1){
+            client_echoUDP(sock, server, argv[1]);
+        }
     }
-    else if (!strcmp(argv[2], "-TCP") || !strcmp(argv[2], "-tcp"))
+    else if (!strcmp(argv[3], "-TCP") || !strcmp(argv[3], "-tcp"))
     {
         ////////////////////
         ////// STREAM //////

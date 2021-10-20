@@ -25,7 +25,7 @@ void getINFO(struct sockaddr_in client)
  * 
  * @return int 
  */
-SOCKET ouvertureTCP(struct sockaddr_in server)
+SOCKET ouvertureTCP(struct sockaddr_in server,int port)
 {
 
     memset(&server, '0', sizeof(server));
@@ -39,7 +39,7 @@ SOCKET ouvertureTCP(struct sockaddr_in server)
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(1234);
+    server.sin_port = htons(port);
 
     if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
@@ -105,7 +105,7 @@ void serveur_echoTCP(SOCKET sockClient)
  * 
  * @return int 
  */
-SOCKET ouvertureUDP(struct sockaddr_in server)
+SOCKET ouvertureUDP(struct sockaddr_in server,int port)
 {
 
     memset(&server, '0', sizeof(server));
@@ -119,7 +119,7 @@ SOCKET ouvertureUDP(struct sockaddr_in server)
 
     server.sin_family = AF_INET;
     server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(1234);
+    server.sin_port = htons(port);
 
     if (bind(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
@@ -142,7 +142,9 @@ void serveur_echoUDP(SOCKET sockServer)
     struct sockaddr_in client;
     int tailleClient = sizeof(client);
 
-    recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
+    int longueur = recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
+
+    buffer[longueur] = '\0';
 
     printf("j'ai recu %s %d\n", buffer, strlen(buffer));
 

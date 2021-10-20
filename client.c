@@ -98,9 +98,9 @@ SOCKET ouvertureUDP()
  */
 int client_echoUDP(SOCKET sock, struct sockaddr_in server, char *message)
 {
-    // char *message = malloc(1000 * sizeof(char));
-    // printf("> ");
-    // scanf("%s", message);
+    //char *message = malloc(1000 * sizeof(char));
+    //printf("> ");
+    //scanf("%s", message);
 
     int taille = sizeof(server);
 
