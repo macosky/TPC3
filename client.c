@@ -67,7 +67,7 @@ int client_echoTCP(SOCKET sock, char *message)
         exit(1);
     }
 
-    puts(message);
+    printf("> %s \n",message);
     //free(message);
     return 0;
 }
@@ -121,7 +121,7 @@ int client_echoUDP(SOCKET sock, struct sockaddr_in server, char *message)
         exit(1);
     }
 
-    puts(message);
+    printf("> %s \n",message);
     //free(message);
     return 0;
 }

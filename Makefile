@@ -21,6 +21,8 @@ serveur: $(OBJ_SERVEUR) serveur.h
 
 clean:
 	rm -f *.o
+	rm -f client
+	rm -f serveur
 
 realclean: clean
 	rm -f $(PRG) *~ out.*

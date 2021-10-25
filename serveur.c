@@ -66,13 +66,13 @@ SOCKET ouvertureTCP(struct sockaddr_in server,int port)
  */
 SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in client)
 {
-    puts("Attente de connexion");
+    puts("------Attente de connexion------");
     int sizesockaddr = sizeof(struct sockaddr_in);
     SOCKET sockClient = accept(sock, (struct sockaddr *)&client, (socklen_t *)&sizesockaddr);
 
-    getINFO(client);
-
     puts("Un client est connecté");
+
+    getINFO(client);
 
     return sockClient;
 }
@@ -84,16 +84,20 @@ SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in client)
  */
 void serveur_echoTCP(SOCKET sockClient)
 {
-    int taille = 0;
     char *buffer = malloc(1000 * sizeof(char));
     memset(buffer, 0, 1000 * sizeof(char));
 
-    while ((taille = recv(sockClient, buffer, 1000 * sizeof(char), 0)) > 0)
-    {
-        write(sockClient, buffer, strlen(buffer));
-        memset(buffer, 0, 1000 * sizeof(char));
-    }
-    free(buffer);
+    int taille = recv(sockClient, buffer, 1000 * sizeof(char), 0);
+
+    buffer[taille] = '\0';
+    
+    write(sockClient, buffer, strlen(buffer));
+    
+    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
+    
+    memset(buffer, 0, 1000 * sizeof(char));
+        
+    free(buffer);    
 }
 
 ////////////////////
@@ -138,15 +142,16 @@ SOCKET ouvertureUDP(struct sockaddr_in server,int port)
  */
 void serveur_echoUDP(SOCKET sockServer)
 {
+    puts("------Attente de message------");
     char *buffer = malloc(1000 * sizeof(char));
     struct sockaddr_in client;
     int tailleClient = sizeof(client);
 
-    int longueur = recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
+    int taille = recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
 
-    buffer[longueur] = '\0';
+    buffer[taille] = '\0';
 
-    printf("j'ai recu %s %d\n", buffer, strlen(buffer));
+    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
 
     getINFO(client);
 
