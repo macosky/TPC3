@@ -42,8 +42,6 @@ int main(int argc, char *argv[])
 
         //on parle au serveur et on recoit ca reponse
         client_echoUDP(sock, server, argv[1]);
-
-        
     }
     else if (!strcmp(argv[4], "-TCP") || !strcmp(argv[4], "-tcp"))
     {

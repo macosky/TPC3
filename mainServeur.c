@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
         ////////////////////
 
         //Creation socket
-        sockServer = ouvertureUDP(server,atoi(argv[1]));
+        sockServer = ouvertureUDP(server, atoi(argv[1]));
 
         while (1)
         {
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
         ////// STREAM //////
         ////////////////////
         // Creation socket
-        sockServer = ouvertureTCP(server,atoi(argv[1]));
+        sockServer = ouvertureTCP(server, atoi(argv[1]));
 
         while (1)
         {

@@ -25,7 +25,7 @@ void getINFO(struct sockaddr_in client)
  * 
  * @return int 
  */
-SOCKET ouvertureTCP(struct sockaddr_in server,int port)
+SOCKET ouvertureTCP(struct sockaddr_in server, int port)
 {
 
     memset(&server, '0', sizeof(server));
@@ -90,14 +90,14 @@ void serveur_echoTCP(SOCKET sockClient)
     int taille = recv(sockClient, buffer, 1000 * sizeof(char), 0);
 
     buffer[taille] = '\0';
-    
+
     write(sockClient, buffer, strlen(buffer));
-    
+
     printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
-    
+
     memset(buffer, 0, 1000 * sizeof(char));
-        
-    free(buffer);    
+
+    free(buffer);
 }
 
 ////////////////////
@@ -109,7 +109,7 @@ void serveur_echoTCP(SOCKET sockClient)
  * 
  * @return int 
  */
-SOCKET ouvertureUDP(struct sockaddr_in server,int port)
+SOCKET ouvertureUDP(struct sockaddr_in server, int port)
 {
 
     memset(&server, '0', sizeof(server));
