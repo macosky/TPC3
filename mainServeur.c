@@ -2,6 +2,7 @@
 
 SOCKET sockServer, sockClient;
 struct sockaddr_in server, client;
+
 /*sighandler*/
 void myInterruptHandler(int signum)
 {
