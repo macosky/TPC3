@@ -1,7 +1,7 @@
 #include "serveur.h"
 
 SOCKET sockServer, sockClient;
-struct sockaddr_in server, client;
+struct sockaddr_in6 server, client;
 
 /*sighandler*/
 void myInterruptHandler(int signum)

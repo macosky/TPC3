@@ -1,6 +1,6 @@
 #include "client.h"
 
-struct sockaddr_in server;
+struct sockaddr_in6 server;
 SOCKET sock;
 
 /*sighandler*/
@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
     }
 
     memset(&server, 0, sizeof(server));
-    server.sin_family = AF_INET;
-    server.sin_port = htons(atoi(argv[3]));
-    server.sin_addr.s_addr = inet_addr(argv[2]);
+    server.sin6_family = AF_INET6;
+    server.sin6_port = htons(atoi(argv[3]));
+    inet_pton(AF_INET6, argv[2], &server.sin6_addr);
 
     signal(SIGTERM, myInterruptHandler);
     signal(SIGINT, myInterruptHandler);

@@ -1,7 +1,7 @@
 #include "client.h"
 
-struct sockaddr_in client_addr;
-struct sockaddr_in server_addr;
+struct sockaddr_in6 client_addr;
+struct sockaddr_in6 server_addr;
 
 ////////////////////
 ////// STREAM //////
@@ -16,7 +16,7 @@ struct sockaddr_in server_addr;
 SOCKET ouvertureTCP()
 {
 
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    SOCKET sock = socket(AF_INET6, SOCK_STREAM, 0);
 
     return sock;
 }
@@ -28,7 +28,7 @@ SOCKET ouvertureTCP()
  * @param server param serveur etablie dans ouverture
  * @return int 
  */
-int connectionTCP(SOCKET sock, struct sockaddr_in server)
+int connectionTCP(SOCKET sock, struct sockaddr_in6 server)
 {
     if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
@@ -85,7 +85,7 @@ int client_echoTCP(SOCKET sock, char *message)
 SOCKET ouvertureUDP()
 {
 
-    SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
+    SOCKET sock = socket(AF_INET6, SOCK_DGRAM, 0);
 
     return sock;
 }
@@ -96,7 +96,7 @@ SOCKET ouvertureUDP()
  * @param sock notre socket connecter
  * @return int 
  */
-int client_echoUDP(SOCKET sock, struct sockaddr_in server, char *message)
+int client_echoUDP(SOCKET sock, struct sockaddr_in6 server, char *message)
 {
     //char *message = malloc(1000 * sizeof(char));
     //printf("> ");

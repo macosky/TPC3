@@ -5,11 +5,13 @@
  * 
  * @param client 
  */
-void getINFO(struct sockaddr_in client)
+void getINFO(struct sockaddr_in6 client)
 {
+    //char *client_ip = inet_ntoa(client.sin6_addr);
 
-    char *client_ip = inet_ntoa(client.sin_addr);
-    printf("Ip source : %s\n", client_ip);
+    char str[INET6_ADDRSTRLEN];
+    inet_ntop(AF_INET6, &client.sin6_addr, str, INET6_ADDRSTRLEN);
+    printf("Ip source : %s\n", str);
 
     char host[128];
     getnameinfo((struct sockaddr *)&client, sizeof(client), host, sizeof(host), NULL, 0, 0);
@@ -25,21 +27,21 @@ void getINFO(struct sockaddr_in client)
  * 
  * @return int 
  */
-SOCKET ouvertureTCP(struct sockaddr_in server, int port)
+SOCKET ouvertureTCP(struct sockaddr_in6 server, int port)
 {
 
     memset(&server, '0', sizeof(server));
 
-    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    SOCKET sock = socket(AF_INET6, SOCK_STREAM, 0);
 
     int optval = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
     puts("Socket créé");
 
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(port);
+    server.sin6_family = AF_INET6;
+    server.sin6_addr = in6addr_any;
+    server.sin6_port = htons(port);
 
     if (bind(sock, (struct sockaddr *)&server, sizeof(server)) == -1)
     {
@@ -64,10 +66,10 @@ SOCKET ouvertureTCP(struct sockaddr_in server, int port)
  * @param client 
  * @return SOCKET 
  */
-SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in client)
+SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in6 client)
 {
     puts("------Attente de connexion------");
-    int sizesockaddr = sizeof(struct sockaddr_in);
+    int sizesockaddr = sizeof(struct sockaddr_in6);
     SOCKET sockClient = accept(sock, (struct sockaddr *)&client, (socklen_t *)&sizesockaddr);
 
     puts("Un client est connecté");
@@ -86,14 +88,38 @@ void serveur_echoTCP(SOCKET sockClient)
 {
     char *buffer = malloc(1000 * sizeof(char));
     memset(buffer, 0, 1000 * sizeof(char));
+    int stat;
 
     int taille = recv(sockClient, buffer, 1000 * sizeof(char), 0);
 
-    buffer[taille] = '\0';
+    pid_t pid = fork();
 
-    write(sockClient, buffer, strlen(buffer));
+    if (pid == -1)
+    {
+        printf("FORK ERROR");
+    }
+    else if (pid == 0)
+    {
+        printf("je suis le fils : %d mon pere est le : %d\n", getpid(),getppid());
 
-    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
+        buffer[taille] = '\0';
+
+        write(sockClient, buffer, strlen(buffer));
+
+        printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
+
+        exit(0);
+    }
+    else
+    {
+        printf("je suis le pere : %d\n", getpid());
+
+
+        pid_t cpid = waitpid(pid, &stat, 0);
+
+        if (WIFEXITED(stat))
+            printf("Fils serveur : %d terminer avec status: %d\n", cpid, WEXITSTATUS(stat));
+    }
 
     memset(buffer, 0, 1000 * sizeof(char));
 
@@ -109,21 +135,21 @@ void serveur_echoTCP(SOCKET sockClient)
  * 
  * @return int 
  */
-SOCKET ouvertureUDP(struct sockaddr_in server, int port)
+SOCKET ouvertureUDP(struct sockaddr_in6 server, int port)
 {
 
     memset(&server, '0', sizeof(server));
 
-    SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
+    SOCKET sock = socket(AF_INET6, SOCK_DGRAM, 0);
 
     int optval = 1;
     setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
 
     puts("Socket UDP créé");
 
-    server.sin_family = AF_INET;
-    server.sin_addr.s_addr = htonl(INADDR_ANY);
-    server.sin_port = htons(port);
+    server.sin6_family = AF_INET6;
+    server.sin6_addr = in6addr_any;
+    server.sin6_port = htons(port);
 
     if (bind(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
     {
@@ -144,18 +170,41 @@ void serveur_echoUDP(SOCKET sockServer)
 {
     puts("------Attente de message------");
     char *buffer = malloc(1000 * sizeof(char));
-    struct sockaddr_in client;
+    struct sockaddr_in6 client;
     int tailleClient = sizeof(client);
+    int stat;
 
     int taille = recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
 
-    buffer[taille] = '\0';
+    pid_t pid = fork();
 
-    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
+    if (pid == -1)
+    {
+        printf("FORK ERROR");
+    }
+    else if (pid == 0)
+    {
+        printf("je suis le fils : %d mon pere est le : %d\n", getpid(),getppid());
 
-    getINFO(client);
+        buffer[taille] = '\0';
 
-    sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
+        printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
+
+        getINFO(client);
+
+        sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
+
+        exit(0);
+    }
+    else
+    {
+        printf("je suis le pere : %d\n", getpid());
+
+        pid_t cpid = waitpid(pid, &stat, 0);
+
+        if (WIFEXITED(stat))
+            printf("Fils serveur : %d terminer avec status: %d\n", cpid, WEXITSTATUS(stat));
+    }
 
     memset(buffer, 0, 1000 * sizeof(char));
 
