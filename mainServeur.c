@@ -12,6 +12,11 @@ void myInterruptHandler(int signum)
     exit(1);
 }
 
+void endChild()
+{
+    wait(NULL);
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 3)
@@ -24,6 +29,7 @@ int main(int argc, char *argv[])
 
     signal(SIGTERM, myInterruptHandler);
     signal(SIGINT, myInterruptHandler);
+    signal(SIGCHLD, endChild);
 
     if (!strcmp(argv[2], "-UDP") || !strcmp(argv[2], "-udp"))
     {
@@ -46,15 +52,26 @@ int main(int argc, char *argv[])
         ////// STREAM //////
         ////////////////////
         // Creation socket
+
         sockServer = ouvertureTCP(server, atoi(argv[1]));
 
         while (1)
         {
-            //on prend 1 client
             sockClient = acceptClientTCP(sockServer, client);
 
-            // on fait de l'echo
-            serveur_echoTCP(sockClient);
+            pid_t pid = fork();
+
+            if (pid == -1)
+            {
+                printf("FORK ERROR");
+            }
+            else if (pid == 0)
+            {
+                // on fait de l'echo
+                serveur_echoTCP(sockClient);
+
+                exit(0);
+            }
         }
     }
     else

@@ -92,34 +92,11 @@ void serveur_echoTCP(SOCKET sockClient)
 
     int taille = recv(sockClient, buffer, 1000 * sizeof(char), 0);
 
-    pid_t pid = fork();
+    buffer[taille] = '\0';
 
-    if (pid == -1)
-    {
-        printf("FORK ERROR");
-    }
-    else if (pid == 0)
-    {
-        printf("je suis le fils : %d mon pere est le : %d\n", getpid(),getppid());
+    write(sockClient, buffer, strlen(buffer));
 
-        buffer[taille] = '\0';
-
-        write(sockClient, buffer, strlen(buffer));
-
-        printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
-
-        exit(0);
-    }
-    else
-    {
-        printf("je suis le pere : %d\n", getpid());
-
-
-        pid_t cpid = waitpid(pid, &stat, 0);
-
-        if (WIFEXITED(stat))
-            printf("Fils serveur : %d terminer avec status: %d\n", cpid, WEXITSTATUS(stat));
-    }
+    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
 
     memset(buffer, 0, 1000 * sizeof(char));
 
@@ -176,35 +153,13 @@ void serveur_echoUDP(SOCKET sockServer)
 
     int taille = recvfrom(sockServer, (char *)buffer, 1000, MSG_WAITALL, (struct sockaddr *)&client, &tailleClient);
 
-    pid_t pid = fork();
+    buffer[taille] = '\0';
 
-    if (pid == -1)
-    {
-        printf("FORK ERROR");
-    }
-    else if (pid == 0)
-    {
-        printf("je suis le fils : %d mon pere est le : %d\n", getpid(),getppid());
+    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
 
-        buffer[taille] = '\0';
+    getINFO(client);
 
-        printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
-
-        getINFO(client);
-
-        sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
-
-        exit(0);
-    }
-    else
-    {
-        printf("je suis le pere : %d\n", getpid());
-
-        pid_t cpid = waitpid(pid, &stat, 0);
-
-        if (WIFEXITED(stat))
-            printf("Fils serveur : %d terminer avec status: %d\n", cpid, WEXITSTATUS(stat));
-    }
+    sendto(sockServer, (const char *)buffer, strlen(buffer), MSG_CONFIRM, (const struct sockaddr *)&client, tailleClient);
 
     memset(buffer, 0, 1000 * sizeof(char));
 
