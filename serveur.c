@@ -68,6 +68,7 @@ SOCKET ouvertureTCP(struct sockaddr_in6 server, int port)
  */
 SOCKET acceptClientTCP(SOCKET sock, struct sockaddr_in6 client)
 {
+    sleep(1);
     puts("------Attente de connexion------");
     int sizesockaddr = sizeof(struct sockaddr_in6);
     SOCKET sockClient = accept(sock, (struct sockaddr *)&client, (socklen_t *)&sizesockaddr);
@@ -96,7 +97,7 @@ void serveur_echoTCP(SOCKET sockClient)
 
     write(sockClient, buffer, strlen(buffer));
 
-    printf("j'ai recu %s de longueur %d\n", buffer, strlen(buffer));
+    printf("Je suis thread %d mon pere est le %d et j'ai echo \" %s \" de longueur %d\n",getpid(), getppid(),buffer, strlen(buffer));
 
     memset(buffer, 0, 1000 * sizeof(char));
 
