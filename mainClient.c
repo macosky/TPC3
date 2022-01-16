@@ -11,6 +11,13 @@ void myInterruptHandler(int signum)
     exit(1);
 }
 
+int isValidIpAddress(char *ipAddress)
+{
+    struct sockaddr_in sa;
+    int result = inet_pton(AF_INET, ipAddress, &(sa.sin_addr));
+    return result != 0;
+}
+
 int main(int argc, char *argv[])
 {
     if (argc != 5)
@@ -21,6 +28,17 @@ int main(int argc, char *argv[])
         puts("PORT -> le port du server");
         puts("OPTION -> -UDP ou -TCP");
         exit(1);
+    }
+
+    if (isValidIpAddress(argv[2]))
+    {
+        char adresse[64] = "::ffff:";
+        strcat(adresse, argv[2]);
+        inet_pton(AF_INET6, adresse, &server.sin6_addr);
+    }
+    else
+    {
+        inet_pton(AF_INET6, argv[2], &server.sin6_addr);
     }
 
     memset(&server, 0, sizeof(server));
