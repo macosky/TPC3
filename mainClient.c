@@ -30,6 +30,12 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+    
+
+    memset(&server, 0, sizeof(server));
+    server.sin6_family = AF_INET6;
+    server.sin6_port = htons(atoi(argv[3]));
+
     if (isValidIpAddress(argv[2]))
     {
         char adresse[64] = "::ffff:";
@@ -40,11 +46,6 @@ int main(int argc, char *argv[])
     {
         inet_pton(AF_INET6, argv[2], &server.sin6_addr);
     }
-
-    memset(&server, 0, sizeof(server));
-    server.sin6_family = AF_INET6;
-    server.sin6_port = htons(atoi(argv[3]));
-    inet_pton(AF_INET6, argv[2], &server.sin6_addr);
 
     signal(SIGTERM, myInterruptHandler);
     signal(SIGINT, myInterruptHandler);
